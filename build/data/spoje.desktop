@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=!Spoje
+Comment=Spoje GUI 
+Exec=spoje-gui.py
+Icon=train
+Categories=Utility;
+Terminal=false
