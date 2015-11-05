@@ -19,7 +19,7 @@
 #
 # Program slouzi k hledani dopravnich spojeni prostrednictvim serveru IDOS
 # Je to graficka nadstavba nad program spoje.py
-#
+# timetable,connection
 # @requires: spoje.py (http://code.google.com/p/spoje/)
 # @author: Josef 'multi' Jebavý 
 # @email:josef.jebavy[at]gmail.com
@@ -119,7 +119,7 @@ class database:
         """)
             self.curs.execute("""insert into config values (1,1,3,2,'Odkud','Kam','VLAK')""") 
         except sqlite3.OperationalError: 
-            print "tabulka config uz existuje"
+            print "table config already exist"
             
         try:            
             self.curs.execute("""create table   version 
@@ -127,7 +127,7 @@ class database:
         """)
             self.curs.execute("""insert into version (version)values (?)""",[version]) 
         except sqlite3.OperationalError: 
-            print "tabulka version uz existuje"
+            print "table version already exist"
             
                           
         self.curs.execute("""create table if not exists  spoje
@@ -140,13 +140,13 @@ class database:
         
         
     def connect(self):
-        print "pripojeni k DB"
+        print "connecting to DB"
         self.conn = sqlite3.connect(self.db_path)
         self.curs = self.conn.cursor()
             
              
     def close(self):
-        print "odpojeni od DB"
+        print "disconnecting from DB"
         self.conn.commit()
         self.curs.close();
         self.conn.close();
@@ -228,7 +228,7 @@ class InfoSave (Info):
         self.button.callback_clicked_add(self.save)
     
     def save(self,evn):
-        print "save spoje"
+        print "save transport"
         self.database.insertSpoj(self.bubble.datum.decode(spoje.KODOVANI_SYSTEM) ,
                                  self.bubble.odkud.decode(spoje.KODOVANI_SYSTEM), 
                                  self.bubble.kam.decode(spoje.KODOVANI_SYSTEM),
@@ -318,7 +318,7 @@ class showData(elementary.Box):
     
     
         btCloseIW = elementary.Button(win)
-        btCloseIW.label_set("zavrit")
+        btCloseIW.label_set("close")
         btCloseIW.show()
         btCloseIW.callback_clicked_add(self.hideIW)
 
@@ -427,50 +427,50 @@ class SpojeGUI:
 
             print "search"
 
-            print "typSpoje:" + self.typSpoje
+            print "type of transport:" + self.typSpoje
 #            idos = self.idos       
             #idos.CLI_MOD=1 
 
             self.idosDotaz = spoje.IDOS_Dotaz()
             
             str = self.prestupyEntry.entry_get() #[: - 4] 
-            print "str prestupu:\"" + str + "\""
+	    print "str interchange:\"" + str + "\""
             try:
                 self.idosDotaz.MAX_PRESTUPU = int(str)  
             except  ValueError:
-                errorStr = "spatne hodnota pro maximum prestupu"
+		errorStr = "bad value for  maximum of interchange"
                 print  errorStr + " ValueError"
                 self.showData.showError(errorStr)
                 return 
                 
             str = self.spojeEntry.entry_get() #[: - 4]  
-            print "str spoju:\"" + str + "\""
+            print "str connection:\"" + str + "\""
             try:
                 self.idosDotaz.MAX_SPOJU = int(str)
             except  ValueError:
-                errorStr = "spatne hodnota pro maximum spoju"
+                errorStr = "bad value for maximum connection"
                 print  errorStr + " ValueError"
                 self.showData.showError(errorStr)
                 return 
 
             
             str = self.odkudEntry.entry_get()#[: - 4] 
-            print "str Odkud:\"" + str + "\""
+            print "str From:\"" + str + "\""
             self.idosDotaz.ODKUD = str            
             str = self.kamEntry.entry_get()#[: - 4]
-            print "str Kam :\"" + str + "\""
+            print "str To :\"" + str + "\""
             self.idosDotaz.KAM = str
             
             str1 = self.hodinaEntry.entry_get()#[: - 4]
-            print "str Hodina :\"" + str1 + "\""
+            print "str Hour :\"" + str1 + "\""
             str2 = self.minutaEntry.entry_get()#[: - 4]
-            print "str Minuta :\"" + str2 + "\""
+            print "str Minute :\"" + str2 + "\""
             self.idosDotaz.CAS = str1 + ":" + str2                        
           
             str1 = self.denEntry.entry_get()#[: - 4]
-            print "str Den :\"" + str1 + "\""
+            print "str Day :\"" + str1 + "\""
             str2 = self.mesicEntry.entry_get()#[: - 4]
-            print "str Mesic :\"" + str2 + "\""
+            print "str Month :\"" + str2 + "\""
             self.idosDotaz.KDY = str1 + "." + str2
             
             
@@ -482,8 +482,8 @@ class SpojeGUI:
             try:
                 self.idos.vyhledej_spojeni(self.idosDotaz)
             except :
-                errorStr1 = "problem pri vyhledavani spojeni"
-                errorStr2 = "napr problem se siti"
+                errorStr1 = "problem while searching connection"
+                errorStr2 = "example problem with network"
                 print errorStr1
                 print errorStr2
                 self.showData.showError(errorStr1 + "<br>" + errorStr2)
@@ -491,7 +491,7 @@ class SpojeGUI:
                 return
         
 
-            print "dotaz proveden"
+            print "query executed"
                
                      
             znovaDotaz = False
@@ -503,7 +503,7 @@ class SpojeGUI:
                 print "Kam je vetsi-vice moznosti:"
                 for i in self.idos.ODPOVED.VYBER_KAM:
                     print i.encode(spoje.KODOVANI_SYSTEM)
-                self.upresneniMista("Upresneni Kam",
+                self.upresneniMista("Clarify To!",
                                      self.idos.ODPOVED.VYBER_KAM,
                                       self.idos.DOTAZ, 
                                       self.kamEntry)
@@ -520,7 +520,7 @@ class SpojeGUI:
                 print "Odkud je vetsi-vice moznosti:"
                 for i in self.idos.ODPOVED.VYBER_ODKUD:
                     print i.encode(spoje.KODOVANI_SYSTEM)
-                self.upresneniMista("Upresneni odkud", self.idos.ODPOVED.VYBER_ODKUD, self.idos.DOTAZ.ODKUD2, self.odkudEntry)
+                self.upresneniMista("Clarify From!", self.idos.ODPOVED.VYBER_ODKUD, self.idos.DOTAZ.ODKUD2, self.odkudEntry)
                 znovaDotaz = True
             else:
                 print "Odkud je mensi-jen jedna moznost"
@@ -575,8 +575,8 @@ class SpojeGUI:
         """pak je treba znova zmackout search"""
         
 
-        print "mistoJmeno:" + mistoJmeno.encode(spoje.KODOVANI_SYSTEM)
-        print "mistoKod:" + mistoKod.encode(spoje.KODOVANI_SYSTEM)
+        print "place Name:" + mistoJmeno.encode(spoje.KODOVANI_SYSTEM)
+        print "place Code:" + mistoKod.encode(spoje.KODOVANI_SYSTEM)
         entryUloz.entry_set(mistoJmeno)
 
 
@@ -637,7 +637,7 @@ class SpojeGUI:
                             spoj_vypis += u" " + prestup.cislo_spoje
                     # pokud byl predan slovnik se zpozdenimi spoju, vytisknu i zpozdeni tohoto konkretniho spoje
                             if prestup.cislo_spoje in zpozdeni:
-                                spoj_vypis += u", zpoždění " + zpozdeni[prestup.cislo_spoje]
+                                spoj_vypis += u", delay " + zpozdeni[prestup.cislo_spoje]
                 
                 # vytisknu nalezeny spoj
                         str += spoj_vypis + oddelovac
@@ -650,7 +650,7 @@ class SpojeGUI:
 
             
             else:
-                  str = " zadny spoj nenalezen "
+                  str = " connection didn't found "
                   
                   self.showData.showError(str)
 
@@ -673,7 +673,7 @@ class SpojeGUI:
 
        # print "event: " + event
 
-        print "typ:" + typ
+        print "type:" + typ
                         
         self.typSpoje = typ
             
@@ -697,7 +697,7 @@ class SpojeGUI:
             hoverFrame = elementary.Frame(self.win)
             hoverFrame.show()
             hoverFrame.size_hint_align_set(evas.EVAS_HINT_FILL, evas.EVAS_HINT_FILL) 
-            hoverFrame.label_set("typ spoje:     ")   
+            hoverFrame.label_set("type of connection:     ")   
        
             
        
@@ -706,7 +706,7 @@ class SpojeGUI:
             hoversel.hover_parent_set(self.win) # kdyz todle nedam tak to vyjizdi nahoru
             hoverFrame.content_set(hoversel)
             hoversel.show()
-            hoversel.label_set("typy spoju")
+            hoversel.label_set("types of  connections")
 
             
             hoversel.label_set(self.typSpoje)
@@ -728,7 +728,7 @@ class SpojeGUI:
         ###############################################
             self.box.pack_end(hoverFrame)
 
-            """defaultni nastaveni tubu spoje"""
+            """default setting type of connection"""
             self.hoversel.label_set(self.typSpoje)
 
     def fillMisto(self):
@@ -744,7 +744,7 @@ class SpojeGUI:
             odkudFrame = elementary.Frame(self.win)
             odkudFrame.show()
             odkudFrame.size_hint_align_set(evas.EVAS_HINT_FILL, evas.EVAS_HINT_FILL) 
-            odkudFrame.label_set("odkud: ")  
+            odkudFrame.label_set("from: ")  
         
             self.odkudEntry = elementary.Entry(self.win)
             odkudEntry = self.odkudEntry
@@ -759,7 +759,7 @@ class SpojeGUI:
             ############## PREHODIT ################
             
             prehoditBT = elementary.Button(self.win)
-            prehoditBT.label_set("prehodit")
+            prehoditBT.label_set("switch")
             prehoditBT.show()    
             prehoditBT.callback_clicked_add(self.prehodit)
             
@@ -770,7 +770,7 @@ class SpojeGUI:
             kamFrame = elementary.Frame(self.win)
             kamFrame.show()
             kamFrame.size_hint_align_set(evas.EVAS_HINT_FILL, evas.EVAS_HINT_FILL) 
-            kamFrame.label_set("kam: ") 
+            kamFrame.label_set("to: ") 
             
             self.kamEntry = elementary.Entry(self.win)
             kamEntry = self.kamEntry
@@ -805,7 +805,7 @@ class SpojeGUI:
             casFrame.size_hint_align_set(evas.EVAS_HINT_FILL, evas.EVAS_HINT_FILL) 
             casFrame.size_hint_weight_set(evas.EVAS_HINT_FILL, evas.EVAS_HINT_FILL)
 
-            casFrame.label_set("Cas: ") 
+            casFrame.label_set("Time: ") 
             
             casBox = elementary.Box(self.win)
             casBox.horizontal_set(True)
@@ -846,7 +846,7 @@ class SpojeGUI:
             datumFrame = elementary.Frame(self.win)
             datumFrame.show()
             datumFrame.size_hint_align_set(evas.EVAS_HINT_FILL, evas.EVAS_HINT_FILL) 
-            datumFrame.label_set("Datum: ") 
+            datumFrame.label_set("Date: ") 
             
             
             datumBox = elementary.Box(self.win)
@@ -904,7 +904,7 @@ class SpojeGUI:
             nastavaniFrame.content_set(nastaveniBox)
 
             prestupyLabel = elementary.Label(self.win)
-            prestupyLabel.label_set("Prestupu:")
+            prestupyLabel.label_set("interchange:")
             prestupyLabel.size_hint_align_set(0.0, - 1.0)
 
             prestupyLabel.show()
@@ -928,7 +928,7 @@ class SpojeGUI:
             nastaveniBox.pack_end(prestupyEntry)
             
             spojeLabel = elementary.Label(self.win)
-            spojeLabel.label_set("     Spoju:")
+            spojeLabel.label_set("number of connection:")
             spojeLabel.size_hint_align_set(0.0, - 1.0)
 
             spojeLabel.show()
@@ -964,7 +964,7 @@ class SpojeGUI:
             self.box.pack_end(poznamkaBox)
             
             poznamkaLabel = elementary.Label(self.win)
-            poznamkaLabel.label_set("zobrazit poznamku")
+            poznamkaLabel.label_set("show comment")
             poznamkaLabel.show()
             
             poznamkaBox.pack_end(poznamkaLabel)
