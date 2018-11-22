@@ -7,7 +7,7 @@
 This program was developed by Josef Jebavý at the end of 2009.
 Primary device for use is  smartphone OpenMoko Neo FreeRunner with OS SHR.
 
-#### [Oficial webpage](http://multi.xeres.cz/programovani/spojegui)
+#### [Oficial webpage](http://blog.josefjebavy.cz/programovani/spojegui)
 
 SpojeGUI is a graphical tool for searching for public transport connections to several cities, buses, trains, and combinations thereof.
 It works (at least partially) in the Slovak Republic.
